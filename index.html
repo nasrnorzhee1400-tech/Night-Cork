@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>شب کورک | عبدالناصر نورزهی</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --accent-color: #f59e0b; /* Amber-500 */
+        }
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-image: radial-gradient(ellipse at top, #1f2937, #111827, #000000);
+            transition: background-color 0.1s ease;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        
+        .special-font { font-family: 'Lalezar', cursive; }
+
+        .gold-text {
+            background: linear-gradient(to bottom, #fef3c7 0%, #f59e0b 50%, #b45309 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        .tactical-glow {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.3);
+            border-color: rgba(245, 158, 11, 0.5);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tactical-glow:active {
+            transform: scale(0.96);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+        }
+        .btn-active {
+            box-shadow: 0 0 50px rgba(245, 158, 11, 0.6), inset 0 0 20px rgba(245, 158, 11, 0.4);
+            border-color: #f59e0b !important;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            background: #f59e0b;
+            border: 3px solid #1f2937;
+            cursor: pointer;
+            margin-top: -12px;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: linear-gradient(to left, #374151, #f59e0b); /* گرادینت اصلاح شده برای نمایش پر شدن از راست به چپ */
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-gray-100 flex flex-col items-center justify-between h-[100dvh] relative w-full select-none py-4">
+
+    <div id="screen-flasher" class="absolute inset-0 w-full h-full opacity-0 pointer-events-none z-0 mix-blend-overlay"></div>
+
+    <!-- هدر: نام عبدالناصر نورزهی -->
+    <div class="z-20 w-full px-4 text-center mt-2 relative">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent"></div>
+        <div class="relative inline-block">
+            <div class="absolute -inset-2 bg-amber-500/10 blur-xl rounded-full"></div>
+            <h1 class="text-5xl md:text-6xl special-font gold-text relative z-10 leading-relaxed py-2">
+                عبدالناصر نورزهی
+            </h1>
+        </div>
+        <div class="flex items-center justify-center gap-3 mt-1">
+            <div class="h-px w-8 bg-gray-600"></div>
+            <h2 class="text-lg font-bold text-gray-400 tracking-wider">اپلیکیشن شب کورک</h2>
+            <div class="h-px w-8 bg-gray-600"></div>
+        </div>
+        <p class="text-xs text-amber-600/80 font-mono mt-1">نسخه حرفه‌ای شکار</p>
+    </div>
+
+    <!-- دکمه قدرت -->
+    <div class="z-10 w-full max-w-md px-6 flex flex-col items-center justify-center flex-grow">
+        <div class="relative group">
+            <div class="absolute -inset-6 bg-gradient-to-r from-orange-600/20 to-amber-600/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
+            <button id="toggleBtn" class="relative w-44 h-44 bg-gradient-to-br from-gray-800 to-gray-950 rounded-full flex items-center justify-center mx-auto border-[6px] border-gray-700 tactical-glow focus:outline-none overflow-hidden group">
+                <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#f59e0b 1px, transparent 1px); background-size: 10px 10px;"></div>
+                <i data-lucide="power" class="w-20 h-20 text-gray-500 transition-all duration-300 relative z-10 group-active:scale-90" id="powerIcon"></i>
+            </button>
+        </div>
+        <div id="statusMsg" class="h-8 flex items-center justify-center text-sm text-amber-400/90 font-medium mt-6 bg-gray-900/50 px-4 rounded-full border border-gray-800 backdrop-blur-sm min-w-[200px]">
+            آماده به کار
+        </div>
+    </div>
+
+    <!-- کنترل پنل -->
+    <div class="z-10 w-full max-w-md px-4 mb-2">
+        <div class="bg-gray-800/40 backdrop-blur-md p-5 rounded-t-3xl border-t border-r border-l border-gray-700/50 shadow-2xl">
+            <div class="flex justify-between mb-4 items-center px-1">
+                <!-- جابجایی برچسب‌ها برای منطق صحیح -->
+                <span class="text-xs text-gray-400 font-bold">کند (آهسته)</span>
+                <span class="text-sm font-black text-amber-500 flex items-center gap-2">
+                    <i data-lucide="settings-2" class="w-4 h-4"></i>
+                    سرعت
+                </span>
+                <span class="text-xs text-gray-400 font-bold">تند (سریع)</span>
+            </div>
+            
+            <div class="relative w-full">
+                <!-- منطق جدید: 0 تا 100 -->
+                <!-- 0 = کندترین، 100 = سریعترین -->
+                <input type="range" id="speedRange" min="0" max="100" step="1" value="50" class="w-full">
+            </div>
+            
+            <div class="mt-3 text-center">
+                 <span id="hzDisplay" class="text-xs font-mono text-amber-300/80"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const toggleBtn = document.getElementById('toggleBtn');
+        const powerIcon = document.getElementById('powerIcon');
+        const speedRange = document.getElementById('speedRange');
+        const screenFlasher = document.getElementById('screen-flasher');
+        const statusMsg = document.getElementById('statusMsg');
+        const hzDisplay = document.getElementById('hzDisplay');
+
+        let isRunning = false;
+        let strobeInterval = null;
+        let track = null;
+        let isTorchOn = false;
+        
+        // متغیرهای سرعت
+        const minDelay = 40;  // کمترین تاخیر (سریعترین حالت) - میلی ثانیه
+        const maxDelay = 1200; // بیشترین تاخیر (کندترین حالت) - میلی ثانیه
+        let currentDelay = 300;
+
+        // تابع محاسبه تاخیر بر اساس مقدار اسلایدر (0 تا 100)
+        function updateSpeed(sliderValue) {
+            // فرمول معکوس: وقتی اسلایدر زیاد میشه (سمت راست)، تاخیر باید کم بشه (سرعت زیاد)
+            // اسلایدر 0 (چپ) -> تاخیر 1200
+            // اسلایدر 100 (راست) -> تاخیر 40
+            
+            // تبدیل 0-100 به فاکتور 0-1
+            const percent = sliderValue / 100;
+            
+            // محاسبه: تاخیر = ماکسیمم - (درصد * (اختلاف ماکس و مین))
+            currentDelay = maxDelay - (percent * (maxDelay - minDelay));
+            
+            // نمایش فرکانس
+            const hz = (1000 / currentDelay).toFixed(1);
+            hzDisplay.textContent = `~ ${hz} هرتز`;
+
+            if (isRunning) {
+                stopStrobe();
+                startStrobe();
+            }
+        }
+
+        // مقدار اولیه
+        updateSpeed(50);
+
+        speedRange.addEventListener('input', (e) => {
+            updateSpeed(parseInt(e.target.value));
+        });
+
+        toggleBtn.addEventListener('click', async () => {
+            if (isRunning) {
+                stopStrobe();
+                releaseCamera();
+                statusMsg.textContent = "سیستم متوقف شد";
+            } else {
+                try {
+                    if (navigator.vibrate) navigator.vibrate(50);
+                    statusMsg.textContent = "در حال راه‌اندازی...";
+                    await initCamera();
+                    startStrobe();
+                } catch (err) {
+                    console.error(err);
+                    statusMsg.textContent = "اجرا بدون فلش (فقط صفحه)";
+                    startStrobe();
+                }
+            }
+            updateUI();
+        });
+
+        async function initCamera() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error("عدم پشتیبانی");
+            }
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "environment" }
+            });
+            track = stream.getVideoTracks()[0];
+            const capabilities = track.getCapabilities();
+            if (!capabilities.torch) {
+                statusMsg.textContent = "هشدار: فقط رقص نور صفحه";
+            } else {
+                statusMsg.textContent = "وضعیت: شلیک نور فعال";
+            }
+        }
+
+        function releaseCamera() {
+            if (track) {
+                track.stop();
+                track = null;
+            }
+        }
+
+        function startStrobe() {
+            isRunning = true;
+            updateUI();
+            
+            strobeInterval = setInterval(async () => {
+                // فلش زدن صفحه
+                screenFlasher.style.backgroundColor = getTacticalColor();
+                screenFlasher.style.opacity = isTorchOn ? "0.3" : "0.9"; 
+
+                // فلش زدن دوربین
+                if (track) {
+                    try {
+                        isTorchOn = !isTorchOn;
+                        await track.applyConstraints({
+                            advanced: [{ torch: isTorchOn }]
+                        });
+                    } catch (e) {}
+                } else {
+                    isTorchOn = !isTorchOn; 
+                }
+            }, currentDelay);
+        }
+
+        function stopStrobe() {
+            isRunning = false;
+            clearInterval(strobeInterval);
+            strobeInterval = null;
+            if (track) {
+                track.applyConstraints({ advanced: [{ torch: false }] }).catch(e => {});
+            }
+            screenFlasher.style.opacity = "0";
+            updateUI();
+        }
+
+        function updateUI() {
+            if (isRunning) {
+                powerIcon.style.color = "#f59e0b"; 
+                powerIcon.classList.add("drop-shadow-[0_0_15px_rgba(245,158,11,1)]");
+                toggleBtn.classList.add("btn-active");
+            } else {
+                powerIcon.style.color = "#6b7280"; 
+                powerIcon.classList.remove("drop-shadow-[0_0_15px_rgba(245,158,11,1)]");
+                toggleBtn.classList.remove("btn-active");
+            }
+        }
+
+        function getTacticalColor() {
+            const colors = ['#ffffff', '#fef3c7', '#dc2626', '#ffffff', '#fbbf24'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+    </script>
+</body>
+</html>
